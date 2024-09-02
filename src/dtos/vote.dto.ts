@@ -6,5 +6,8 @@ export class VoteDto {
 
   @ApiProperty({ description: 'ID of the proposal being voted on' })
   proposalId: number;
+
+  @ApiProperty({ description: 'Amount of token votes being cast' })
+  amount: string;
 }
 

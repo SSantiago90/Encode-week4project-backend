@@ -187,21 +187,22 @@ export class AppService {
   }
 }
 
-async castVote(body: VoteDto) {
-  const { address, proposalId } = body;
+async vote(body: VoteDto) {
+  const { address, proposalId, amount } = body;
   try {
     const voteTx = await this.walletClient.writeContract({
       address: this.getContractAddress(),
       abi: tokenJSON.abi,
-      functionName: 'castVote',
-      args: [proposalId],
+      functionName: 'vote',
+      args: [BigInt(proposalId), parseEther(amount)],
+      account: address,
     });
 
     if (await this.waitForTransactionSuccess(voteTx)) {
-      console.log(`Vote cast for proposal ${proposalId} by ${address}`);
+      console.log(`Vote cast for proposal ${proposalId} by ${address} with ${amount} votes`);
       return {
         result: true,
-        message: `Successfully cast vote for proposal ${proposalId} by ${address}`,
+        message: `Successfully cast ${amount} votes for proposal ${proposalId} by ${address}`,
         transactionHash: voteTx,
       };
     } else {
@@ -219,7 +220,5 @@ async castVote(body: VoteDto) {
     };
   }
 }
-
-
 
 }

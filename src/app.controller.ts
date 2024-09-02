@@ -69,26 +69,10 @@ export class AppController {
   }
 
   // curl -X POST -H "Content-Type: application/json" -d '{"address":"0xYourAddressHere", "proposalId":1}' http://localhost:3001/vote
-
-  @Post('cast-vote')
-  async castVote(@Body() body: VoteDto): Promise<{}> {
-    const response = await this.appService.castVote(body);
+  @Post('vote')
+  async vote(@Body() body: VoteDto): Promise<{}> {
+    const response = await this.appService.vote(body);
     return { result: response };
   }
-
-
-
-
- 
-  // @Post('mint-tokens')
-  // async mintTokens(@Body('address') address: string): Promise<string> {
-  //   return this.appService.mintTokens(address);
-  // }
-
-  /*
-  curl -X POST -H "Content-Type: application/json" -d '{"address":"0xb702E6E38E3831f3d0BD7F9e41566f8326526593", "amount": 1}' http://localhost:3001/mint-tokens
-
-  {"result":{"result":true,"message":"Minted  1 tokens to 0xb702E6E38E3831f3d0BD7F9e41566f8326526593","transactionHash":"0xce53225f201ac68dc3f5682f07c9231be1820fa130376dd743a08c566c43d55f"}}%
-  */
 
 }
