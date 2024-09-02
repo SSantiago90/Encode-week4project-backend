@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import * as tokenJSON from './assets/MyToken.json';
+import * as ballotJSON from './assets/TokenizedBallot.json';
 import { createPublicClient, createWalletClient, http, parseEther } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 import { ConfigService } from '@nestjs/config';
 import { MintTokenDto } from './dtos/mintToken.dto';
 import { SelfDelegateToken } from './dtos/selfDelegateToken.dto';
+import { CastVoteDto } from './dtos/castVote.dto';
 
 @Injectable()
 export class AppService {
@@ -26,7 +28,7 @@ export class AppService {
   }
 
   getHello(): string {
-    return 'Hello Worlds of Wonder!';
+    return 'Connected';
   }
 
   getContractAddress(): string {
@@ -186,7 +188,6 @@ export class AppService {
   }
 
   async selfDelegateTokens(body: SelfDelegateToken){
-    return "Endpoint connected"
     const address = body.address;
 
     const delegateTx = await this.walletClient.writeContract({
@@ -229,6 +230,41 @@ export class AppService {
       return {
         result: false,
         message: `Error minting tokens: ${error.message}`,
+      };
+    }
+  }
+
+  async castVote(body: CastVoteDto) {
+    const proposalId = body.proposalId;
+    const amount = body.amount;
+    
+    try {
+      const castVoteTx = await this.walletClient.writeContract({
+        address: this.getContractAddress(),
+        abi: ballotJSON.abi,
+        functionName: 'vote',
+        args: [proposalId, parseEther(amount.toString())],
+      });
+
+      if (await this.waitForTransactionSuccess(castVoteTx)) {
+        console.log(`Vote cast successfully for proposal ${proposalId}`);
+        return {
+          result: true,
+          message: `Vote cast successfully for proposal ${proposalId}`,
+          transactionHash: castVoteTx,
+        };
+      } else {
+        return {
+          result: false,
+          message: `Failed to cast vote for proposal ${proposalId}`,
+          transactionHash: castVoteTx,
+        };
+      }
+    } catch (error) {
+      console.error('Error in castVote:', error);
+      return {
+        result: false,
+        message: `Error casting vote: ${error.message}`,
       };
     }
   }

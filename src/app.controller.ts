@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MintTokenDto } from './dtos/mintToken.dto';
 import { SelfDelegateToken } from './dtos/selfDelegateToken.dto';
+import { CastVoteDto } from './dtos/castVote.dto';
 
 @Controller()
 export class AppController {
@@ -59,9 +60,12 @@ export class AppController {
     return { result: response };
   }
 
-
-
- 
+  @Post('cast-vote')
+  async castVote(@Body() body: CastVoteDto): Promise<{}> {
+    const response = await this.appService.castVote(body);
+    return { result: response };
+  }
+  
   // @Post('mint-tokens')
   // async mintTokens(@Body('address') address: string): Promise<string> {
   //   return this.appService.mintTokens(address);
